@@ -24,6 +24,7 @@ public class PerfAspect {
     @Before("bean(simpleEventService)")
     public void hello(){
         System.out.println("hello");
+        System.out.println("test");
     }
 
 }

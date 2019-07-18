@@ -26,5 +26,4 @@ public class PerfAspect {
         System.out.println("hello");
         System.out.println("test");
     }
-
 }

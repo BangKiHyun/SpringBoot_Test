@@ -3,10 +3,14 @@
 ### extends Egov 분석
 
 - EgovAbstracServiceImpl
-
+  - SerivceImpl 클래스에 확장
+  - 프레임워크 공통의 Exception처리를 위한 기능을 제공하는 추상 클래스
 - EgovAbstractmapper
-
-- EgovAbstractdao 
+  - DAO/Mapper 클래스에 확장
+  - Spring의 MyBatis 연동 지원을 하는 추상 클래스
+- EgovAbstractdao
+  - DAO/Mapper 클래스에 확장
+  - Spring 의  IBatis 연동 지원을 Annotation 형식으로 쉽게 처리하기위한 추상 클래스
 
 
 
@@ -14,77 +18,89 @@
 
 ### Core(xml) 분석
 
-- context-aspect.xml
+- ##### context-aspect.xml
 
   - Spring에서의 AOP 프로그래밍을 사용하기 위한 Core
+
+  - AOP 란?
+
+    - 흩어진 Aspect를 모듈화 할 수 있는 프로그래밍 
+
   - 용어 정리
     - Aspect
-    - Join point
+      - 하나의 모듈(모듈화 한 것)
+      - 모듈은 Advice와 Pointcut으로 나누어짐
+    - Join point(합류점)
+      - method 호출 or method 실행시점
+      - method를 실행할 때 그 곳에 끼어들어라
     - Pointcut
+      - 어디에 적용해야 하는지에 대한 정보를 갖고있다
     - Advice
-    - Proxy
+      - 해야할 일들
     - Target
+      - 적용이 되는 대상
+
   - 코드
 
-  	<aop:config>
-  		// user.service.impl 패키지 이하, impl로 끝나는 패키지의 클래스 명이 impl로 끝나는 클래스의 모든 메서드가 대상이 된다(CommonServiceimpl.java)
-  		<aop:pointcut id="serviceMethod" expression="execution(* user.service.impl.*Impl.*(..))" />
-  		// exceprion이 발생하면 exceprionTransfer에게 알려줘 특정 예외처리를 한다
-  		<aop:aspect ref="exceptionTransfer">
-  			<aop:after-throwing throwing="exception" pointcut-ref="serviceMethod" method="transfer" />
-  		</aop:aspect>
-  	</aop:config>
-  	
-  	// exceprionTransfer은 정의한 2가지 default, other ExceprionGandleManager에게 해당 예외발생을 알림
-  	<bean id="exceptionTransfer" class="egovframework.rte.fdl.cmmn.aspect.ExceptionTransfer">
-  		<property name="exceptionHandlerService">
-  			<list>
-  				<ref bean="defaultExceptionHandleManager" />
-  				<ref bean="otherExceptionHandleManager" />
-  			</list>
-  		</property>
-  	</bean>
-  	
-  	// 밑에 2가지 handelr들은 특정 패턴(Patten)에 맞는 경우에만 반응하도록 해둔 것
-  	여기서는 service.impl이하 패키지에 속한 클래스에서 오류가 발생한 경우에 자신의 handler를 수행하게 되어있다.
-  	<bean id="defaultExceptionHandleManager" class="egovframework.rte.fdl.cmmn.exception.manager.DefaultExceptionHandleManager">
-  		<property name="reqExpMatcher">
-  			<ref bean="antPathMater"/>
-  		</property>
-  		<property name="patterns">
-  			<list>
-  				<value>**service.impl.*</value>
-  			</list>
-  		</property>
-  		<property name="handlers">
-  			<list>
-  				<ref bean="egovHandler" />
-  			</list>
-  		</property>
-  	</bean>
-  	
-  	<bean id="otherExceptionHandleManager" class="egovframework.rte.fdl.cmmn.exception.manager.DefaultExceptionHandleManager">
-  		<property name="reqExpMatcher">
-  			<ref bean="antPathMater"/>
-  		</property>
-  		<property name="patterns">
-  			<list>
-  				<value>**service.impl.*</value>
-  			</list>
-  		</property>
-  		<property name="handlers">
-  			<list>
-  				<ref bean="otherHandler" />
-  			</list>
-  		</property>
-  	</bean>
-  	
-  	<bean id="egovHandler" class="egovframework.example.cmmn.EgovSampleExcepHndlr" />
-  	<bean id="otherHandler" class="egovframework.example.cmmn.EgovSampleOthersExcepHndlr" />	
+    <aop:config>
+    	// user.service.impl 패키지 이하, impl로 끝나는 패키지의 클래스 명이 impl로 끝나는 클래스의 모든 메서드가 대상이 된다(CommonServiceimpl.java)
+    	<aop:pointcut id="serviceMethod" expression="execution(* user.service.impl.*Impl.*(..))" />
+    	// exceprion이 발생하면 exceprionTransfer에게 알려줘 특정 예외처리를 한다
+    	<aop:aspect ref="exceptionTransfer">
+    		<aop:after-throwing throwing="exception" pointcut-ref="serviceMethod" method="transfer" />
+    	</aop:aspect>
+    </aop:config>
+
+    // exceprionTransfer은 정의한 2가지 default, other ExceprionGandleManager에게 해당 예외발생을 알림
+    <bean id="exceptionTransfer" class="egovframework.rte.fdl.cmmn.aspect.ExceptionTransfer">
+    	<property name="exceptionHandlerService">
+    		<list>
+    			<ref bean="defaultExceptionHandleManager" />
+    			<ref bean="otherExceptionHandleManager" />
+    		</list>
+    	</property>
+    </bean>
+
+    // 밑에 2가지 handelr들은 특정 패턴(Patten)에 맞는 경우에만 반응하도록 해둔 것
+    여기서는 service.impl이하 패키지에 속한 클래스에서 오류가 발생한 경우에 자신의 handler를 수행하게 되어있다.
+    <bean id="defaultExceptionHandleManager" class="egovframework.rte.fdl.cmmn.exception.manager.DefaultExceptionHandleManager">
+    	<property name="reqExpMatcher">
+    		<ref bean="antPathMater"/>
+    	</property>
+    	<property name="patterns">
+    		<list>
+    			<value>**service.impl.*</value>
+    		</list>
+    	</property>
+    	<property name="handlers">
+    		<list>
+    			<ref bean="egovHandler" />
+    		</list>
+    	</property>
+    </bean>
+
+    <bean id="otherExceptionHandleManager" class="egovframework.rte.fdl.cmmn.exception.manager.DefaultExceptionHandleManager">
+    	<property name="reqExpMatcher">
+    		<ref bean="antPathMater"/>
+    	</property>
+    	<property name="patterns">
+    		<list>
+    			<value>**service.impl.*</value>
+    		</list>
+    	</property>
+    	<property name="handlers">
+    		<list>
+    			<ref bean="otherHandler" />
+    		</list>
+    	</property>
+    </bean>
+
+    <bean id="egovHandler" class="egovframework.example.cmmn.EgovSampleExcepHndlr" />
+    <bean id="otherHandler" class="egovframework.example.cmmn.EgovSampleOthersExcepHndlr" />	
 
   </beans>
 
-- context-common.xml
+- ##### context-common.xml
 
   - 공통되거나 일반적인 설정
 
@@ -137,7 +153,7 @@
         <bean id="antPathMater" class="org.springframework.util.AntPathMatcher" />
         <bean id="defaultTraceHandler" class="egovframework.rte.fdl.cmmn.trace.handler.DefaultTraceHandler" />
 
-- context-datasource.xml
+- ##### context-datasource.xml
 
   - DB접속 설정관련 datasource 설정
 
@@ -155,7 +171,7 @@
             <property name="password" value="tmxjel"/>
         </bean>
 
-- context-mapper.xml
+- ##### context-mapper.xml
 
   - DB쿼리 이후 VO(Value Object)객체에 대한 Mapping을
     IBatis or MyBatis등을 사용해서 할수 있도록 설정
@@ -171,7 +187,7 @@
       		<property name="mapperLocations" value="classpath:/egovframework/sqlmap/example/mappers/*.xml" />
       	</bean>
 
-- context-properties.xml
+- ##### context-properties.xml
 
   - 각종 설정값 설정
 
@@ -179,18 +195,21 @@
 
   - 코드
 
-    	// name : 빈의 이름 명시
-      	<bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
-      		<property name="properties">
-      	        <map>
-      	        	// key, vlaue 값 설정
-      	        	<entry key="pageUnit" value="10"/>
-      	        	<entry key="pageSize" value="10"/>
-      	        </map>
-      		</property>
-      	</bean>
+     // name : 빈의 이름 명시
 
-- context-transaction.xml
+     	<bean name="propertiesService" class="egovframework.rte.fdl.property.impl.EgovPropertyServiceImpl" destroy-method="destroy">
+     		<property name="properties">
+     		//key, value값 설정
+     	        <map>
+     	        	<entry key="pageUnit" value="10"/>
+     	        	<entry key="pageSize" value="10"/>
+     	        </map>
+     		</property>
+     	</bean>
+
+     </beans>	
+
+- ##### context-transaction.xml
 
   - 트렌젝션 설정
 
@@ -220,7 +239,7 @@
       		<aop:advisor advice-ref="txAdvice" pointcut-ref="requiredTx" />
       	</aop:config>
 
-- context-validator.xml
+- ##### context-validator.xml
 
   - 검증관련(회원가입 할때, id 길이, mail주소 포함여부 등) 설정
 
@@ -238,17 +257,3 @@
                 </list>
             </property>
         </bean>
-
-
-
-
-
-### 연습용 Controller
-
-Controller -> Service -> DAO(DB)
-
-
-
-
-
-### JavaScrypt로 번호 추출 Code

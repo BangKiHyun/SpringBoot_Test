@@ -12,9 +12,6 @@ public class SampleController {
     Logger logger = LoggerFactory.getLogger(SampleController.class);
 
     @Autowired
-    private SampleController sampleController;
-
-    @Autowired
     private SampleService sampleService;
 
     @GetMapping("/hello")

@@ -1,6 +1,5 @@
 package me.bbang.springbootstartmvn;
 
-import com.jayway.jsonpath.JsonPath;
 import me.bbang.springbootstartmvn.user.UserController;
 import org.junit.Test;
 import org.junit.runner.RunWith;

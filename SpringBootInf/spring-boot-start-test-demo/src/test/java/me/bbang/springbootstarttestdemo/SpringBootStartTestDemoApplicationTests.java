@@ -36,6 +36,7 @@ public class SpringBootStartTestDemoApplicationTests {
                 .andExpect(content().string("hello bang"))
                 .andDo(print());
     }*/
+
     @Rule
     public OutputCapture outputCapture = new OutputCapture();
 

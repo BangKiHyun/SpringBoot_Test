@@ -27,5 +27,4 @@ public class SpringBootStartMvc3ApplicationTests {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._links.self").exists());
     }
-
 }
